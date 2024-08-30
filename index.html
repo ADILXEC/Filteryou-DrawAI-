@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filter-You</title>
+  <link rel="icon" type="image/png" href="Favcon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-image: url('download.gif');
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      color: white; /* Set text color to white */
+    }
+
+    #container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 20px; /* Space between output and canvas */
+    }
+
+    #canvasContainer {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      color: white; /* Set text color to white */
+      margin-bottom: 10px; /* Adjust margin if needed */
+    }
+
+    canvas {
+      border: 0.5px solid white; /* Change border color to white */
+      width: 400px; /* Set the canvas width */
+      height: 300px; /* Set the canvas height */
+      margin-bottom: 10px; /* Space between canvas and prompt */
+    }
+
+    input[type="text"], button, label {
+      width: 80%;
+      margin-bottom: 10px;
+      background-color: transparent;
+      border: none;
+      color: white; /* Set text color to white */
+      padding: 5px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+    }
+
+    input[type="text"] {
+      border-bottom: 1px solid white; /* Set border color to white */
+    }
+
+    #output {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      margin-top: -150px; /* Move the generated result up by 150px */
+    }
+
+    #output img {
+      border: 2px solid white; /* Change border size to 2px */
+    }
+
+    button {
+      background-color: rgb(255, 172, 226);
+      border-radius: 100px;
+      color: black;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+    }
+
+    #logo {
+      position: absolute;
+      bottom: 650px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: auto;
+      opacity: 1;
+    }
+
+    @media only screen and (max-width: 600px) {
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        height: auto;
+        padding: 20px;
+        background-image: url('BG.jpeg');
+        background-size: cover;
+        background-position: center;
+      }
+
+      #container {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 600px;
+      }
+
+      #canvasContainer {
+        width: 100%;
+        max-width: 600px;
+        margin-right: 0;
+      }
+
+      canvas {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 10px; /* Space between canvas and prompt */
+      }
+
+      input[type="text"], button, label {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      #output img {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+      }
+
+      #logo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="canvasContainer">
+      <h1>Filter You Sketch to Image</h1>
+      <canvas id="drawingCanvas" width="400" height="300"></canvas>
+      <label for="prompt">Prompt:</label>
+      <input type="text" id="prompt" placeholder="Enter your prompt">
+      <button onclick="convertSketchToImage()">Generate</button>
+      <button onclick="regenerate()">Regenerate</button>
+    </div>
+    <div id="output"></div>
+  </div>
+  <img id="logo" src="Logo.png" alt="Logo">
+  <script>
+    const canvas = document.getElementById('drawingCanvas');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+
+    function startDrawing(e) {
+      isDrawing = true;
+      const pos = getMouseOrTouchPosition(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      ctx.strokeStyle = 'white'; // Set line color to white
+      ctx.lineWidth = 2; // Set line width as needed
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      const pos = getMouseOrTouchPosition(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+
+    function getMouseOrTouchPosition(evt) {
+      let clientX, clientY;
+      if (evt.touches) {
+        clientX = evt.touches[0].clientX;
+        clientY = evt.touches[0].clientY;
+      } else {
+        clientX = evt.clientX;
+        clientY = evt.clientY;
+      }
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('touchstart', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('touchend', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+
+    function convertSketchToImage() {
+      document.getElementById('output').innerHTML = 'Generating...';
+
+      const form = new FormData();
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = 1024;
+      tempCanvas.height = 1024;
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCtx.fillStyle = 'black'; // Set background color to black
+      tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+      tempCtx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
+
+      // Enhance sketch: Increase contrast and convert to grayscale
+      const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+      const data = imageData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        data[i] = brightness;
+        data[i + 1] = brightness;
+        data[i + 2] = brightness;
+      }
+      tempCtx.putImageData(imageData, 0, 0);
+
+      const dataUrl = tempCanvas.toDataURL('image/jpg');
+      const blobBin = atob(dataUrl.split(',')[1]);
+      const array = [];
+      for (let i = 0; i < blobBin.length; i++) {
+        array.push(blobBin.charCodeAt(i));
+      }
+      const file = new Blob([new Uint8Array(array)], { type: 'image/jpg' });
+
+      const promptText = document.getElementById('prompt').value;
+      form.append('sketch_file', file, 'drawing.jpg');
+      form.append('prompt', promptText);
+
+      fetch('https://clipdrop-api.co/sketch-to-image/v1/sketch-to-image', {
+        method: 'POST',
+        headers: {
+          'x-api-key': '4884c964262c66171d48aa449c361abfb99db534735128352089f9d0f404d01cda02fad7ad3c7617609aa6c4de0c87e9',
+        },
+        body: form,
+      })
+        .then(response => response.blob())
+        .then(blob => {
+          const imageUrl = URL.createObjectURL(blob);
+          const imageElement = document.createElement('img');
+          imageElement.src = imageUrl;
+
+          // Set the width and height of the generated image to match the canvas
+          imageElement.width = canvas.width;
+          imageElement.height = canvas.height;
+
+          document.getElementById('output').innerHTML = '';
+          document.getElementById('output').appendChild(imageElement);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          document.getElementById('output').textContent = 'Error generating image. Please try again.';
+        });
+    }
+
+    function regenerate() {
+      convertSketchToImage();
+    }
+  </script>
+</body>
+</html>
