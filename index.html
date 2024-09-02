@@ -95,6 +95,7 @@
       align-items: center;
       flex-direction: column;
       margin-top: -150px; /* Move the generated result up by 150px */
+      position: relative;
     }
 
     #output img {
@@ -241,6 +242,43 @@
         display: none; /* Hide the help button on smaller screens */
       }
     }
+
+    #downloadButton {
+  position: absolute; /* Absolute positioning */
+  bottom: 250px; /* Distance from the bottom of the viewport */
+  right: 700px; /* Distance from the right edge of the viewport */
+  background-color: rgb(255, 172, 226);
+  border-radius: 100px; /* Capsule shape */
+  color: black;
+  padding: 5px 8px; /* Adjust padding to make it smaller */
+  border: none;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 10px; /* Match font size with help button */
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  height: 40px;
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#downloadButton img {
+  width: 16px; /* Icon size */
+  vertical-align: middle;
+  margin-right: 4px; /* Slightly reduced margin */
+}
+
+
+
+    #outputContainer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px; /* Space between image and download button */
+    }
   </style>
 </head>
 <body>
@@ -272,7 +310,12 @@
         <img src="regenerate.png" alt="Regenerate">Regenerate
       </button>
     </div>
-    <div id="output"></div>
+    <div id="outputContainer">
+      <div id="output"></div>
+      <button id="downloadButton" style="display: none;" onclick="downloadImage()">
+        <img src="download.png" alt="Download">Save
+      </button>
+    </div>
     <div id="loading">Generating your image, please wait...</div>
   </div>
   <script>
@@ -328,6 +371,7 @@
     function convertSketchToImage() {
       document.getElementById('loading').style.display = 'block'; // Show loading message
       document.getElementById('output').innerHTML = '';
+      document.getElementById('downloadButton').style.display = 'none'; // Hide the download button initially
 
       const form = new FormData();
       const tempCanvas = document.createElement('canvas');
@@ -380,6 +424,10 @@
 
           document.getElementById('output').innerHTML = '';
           document.getElementById('output').appendChild(imageElement);
+
+          // Show the download button
+          document.getElementById('downloadButton').style.display = 'block';
+          document.getElementById('downloadButton').dataset.url = imageUrl; // Store image URL in data attribute
         })
         .catch(error => {
           console.error('Error:', error);
@@ -397,6 +445,17 @@
     function toggleHelp() {
       const helpSection = document.getElementById('helpSection');
       helpSection.style.display = helpSection.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function downloadImage() {
+      const downloadButton = document.getElementById('downloadButton');
+      const imageUrl = downloadButton.dataset.url; // Retrieve image URL from data attribute
+      const a = document.createElement('a');
+      a.href = imageUrl;
+      a.download = 'generated_image.jpg'; // Set default file name
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
 
     // Remove the "Scribble Here" text after 3 seconds
