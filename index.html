@@ -7,6 +7,11 @@
   <link rel="icon" type="image/png" href="Favcon.png">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --help-button-height: 30px; /* Default height */
+      --help-button-width: 80px; /* Default width */
+    }
+
     body {
       display: flex;
       justify-content: center;
@@ -35,6 +40,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      position: relative;
     }
 
     h1 {
@@ -49,6 +55,19 @@
       width: 400px; /* Set the canvas width */
       height: 300px; /* Set the canvas height */
       margin-bottom: 10px; /* Space between canvas and prompt */
+      position: relative;
+    }
+
+    #scribbleText {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: rgb(255, 172, 226); /* Pinkish color */
+      font-size: 20px;
+      font-weight: 600;
+      opacity: 1;
+      transition: opacity 1s ease-out; /* Shorter transition for quicker fade out */
     }
 
     input[type="text"], button, label {
@@ -86,22 +105,80 @@
       background-color: rgb(255, 172, 226);
       border-radius: 100px;
       color: black;
-      padding: 10px 20px;
+      padding: 5px 15px; /* Reduced padding for smaller button */
       border: none;
       cursor: pointer;
       margin-top: 10px;
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
+      font-size: 14px; /* Reduced font size for smaller button */
     }
 
-    #logo {
+    button img {
+      width: 16px; /* Smaller icon */
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    #helpButton {
       position: absolute;
-      bottom: 650px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 300px;
+      top: 40px;
+      right: 500px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: none;
+      padding: 5px 10px; /* Reduced padding for smaller button */
+      border-radius: 50px; /* Capsule shape */
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 12px; /* Smaller font size */
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      height: var(--help-button-height);
+      width: var(--help-button-width);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #helpButton img {
+      width: 16px; /* Icon size */
       height: auto;
-      opacity: 1;
+      margin-right: 6px;
+    }
+
+    #helpSection {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-radius: 8px;
+      position: absolute;
+      top: 80px;
+      right: 20px;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      display: none;
+    }
+
+    #helpSection h2 {
+      margin-top: 0;
+    }
+
+    #helpSection ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #helpSection li {
+      margin-bottom: 10px;
+    }
+
+    #loading {
+      display: none;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
     }
 
     @media only screen and (max-width: 600px) {
@@ -147,28 +224,55 @@
         height: auto;
       }
 
-      #logo {
+      #helpSection {
+        display: block;
+        position: relative;
+        top: auto;
+        right: auto;
+      }
+
+      #helpButton {
         display: none;
       }
     }
   </style>
 </head>
 <body>
+  <button id="helpButton" onclick="toggleHelp()">
+    <img src="help.png" alt="Help">Help
+  </button>
+  <div id="helpSection">
+    <h2>How to Use</h2>
+    <ul>
+      <li><strong>Draw:</strong> Use your mouse or touchscreen to draw on the canvas.</li>
+      <li><strong>Enter Prompt:</strong> Type a description for the image you want to generate based on your sketch.</li>
+      <li><strong>Generate:</strong> Click this button to generate an image from your sketch and prompt.</li>
+      <li><strong>Regenerate:</strong> Click this button to generate a new image with the same prompt.</li>
+    </ul>
+  </div>
   <div id="container">
     <div id="canvasContainer">
-      <h1>Filter You Sketch to Image</h1>
-      <canvas id="drawingCanvas" width="400" height="300"></canvas>
-      <label for="prompt">Prompt:</label>
-      <input type="text" id="prompt" placeholder="Enter your prompt">
-      <button onclick="convertSketchToImage()">Generate</button>
-      <button onclick="regenerate()">Regenerate</button>
+      <h1>Doodle To Dream</h1>
+      <div style="position: relative;">
+        <canvas id="drawingCanvas" width="400" height="300"></canvas>
+        <div id="scribbleText">Scribble Here</div>
+      </div>
+      <label for="prompt" title="Enter a description or prompt for your drawing">Prompt:</label>
+      <input type="text" id="prompt" placeholder="(Ex. 'A futuristic cityscape')" title="Type your prompt here">
+      <button onclick="convertSketchToImage()" title="Click to generate an image from your sketch">
+        <img src="generate.png" alt="Generate">Generate
+      </button>
+      <button onclick="regenerate()" title="Click to regenerate the image with the same prompt">
+        <img src="regenerate.png" alt="Regenerate">Regenerate
+      </button>
     </div>
     <div id="output"></div>
+    <div id="loading">Generating your image, please wait...</div>
   </div>
-  <img id="logo" src="Logo.png" alt="Logo">
   <script>
     const canvas = document.getElementById('drawingCanvas');
     const ctx = canvas.getContext('2d');
+    const scribbleText = document.getElementById('scribbleText');
     let isDrawing = false;
 
     function startDrawing(e) {
@@ -216,7 +320,8 @@
     canvas.addEventListener('mouseout', stopDrawing);
 
     function convertSketchToImage() {
-      document.getElementById('output').innerHTML = 'Generating...';
+      document.getElementById('loading').style.display = 'block'; // Show loading message
+      document.getElementById('output').innerHTML = '';
 
       const form = new FormData();
       const tempCanvas = document.createElement('canvas');
@@ -273,12 +378,25 @@
         .catch(error => {
           console.error('Error:', error);
           document.getElementById('output').textContent = 'Error generating image. Please try again.';
+        })
+        .finally(() => {
+          document.getElementById('loading').style.display = 'none'; // Hide loading message
         });
     }
 
     function regenerate() {
       convertSketchToImage();
     }
+
+    function toggleHelp() {
+      const helpSection = document.getElementById('helpSection');
+      helpSection.style.display = helpSection.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Remove the "Scribble Here" text after 3 seconds
+    setTimeout(() => {
+      scribbleText.style.display = 'none';
+    }, 2000);
   </script>
 </body>
 </html>
