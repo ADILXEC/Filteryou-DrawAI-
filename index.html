@@ -122,17 +122,17 @@
 
     #helpButton {
       position: absolute;
-      top: 40px;
-      right: 500px;
+      top: 20px; /* Adjusted from 40px */
+      right: 40px; /* Adjusted from 500px */
       background-color: rgba(0, 0, 0, 0.7);
       color: white;
       border: none;
-      padding: 5px 10px; /* Reduced padding for smaller button */
+      padding: 5px 8px; /* Reduced padding */
       border-radius: 50px; /* Capsule shape */
       cursor: pointer;
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
-      font-size: 12px; /* Smaller font size */
+      font-size: 10px; /* Smaller font size */
       text-align: center;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
       height: var(--help-button-height);
@@ -145,33 +145,37 @@
     #helpButton img {
       width: 16px; /* Icon size */
       height: auto;
-      margin-right: 6px;
+      margin-right: 4px; /* Slightly reduced margin */
     }
 
     #helpSection {
       background-color: rgba(0, 0, 0, 0.7);
-      padding: 15px;
+      padding: 10px; /* Reduced padding */
       border-radius: 8px;
       position: absolute;
-      top: 80px;
-      right: 20px;
+      top: 70px; /* Adjusted from 80px */
+      right: 20px; /* Same as before */
       color: white;
       font-family: 'Poppins', sans-serif;
-      font-weight: 600;
+      font-weight: 400; /* Slightly lighter font weight */
+      font-size: 12px; /* Smaller font size */
       display: none;
+      max-width: 250px; /* Set a maximum width for the help section */
     }
 
     #helpSection h2 {
       margin-top: 0;
+      font-size: 14px; /* Smaller font size for the heading */
     }
 
     #helpSection ul {
       list-style-type: none;
       padding: 0;
+      margin: 0;
     }
 
     #helpSection li {
-      margin-bottom: 10px;
+      margin-bottom: 5px; /* Reduced margin for list items */
     }
 
     #loading {
@@ -225,14 +229,16 @@
       }
 
       #helpSection {
-        display: block;
+        padding: 8px; /* Further reduced padding on smaller screens */
+        font-size: 10px; /* Smaller font size on smaller screens */
+        max-width: none; /* Remove max-width on smaller screens */
         position: relative;
         top: auto;
         right: auto;
       }
 
       #helpButton {
-        display: none;
+        display: none; /* Hide the help button on smaller screens */
       }
     }
   </style>
@@ -396,7 +402,7 @@
     // Remove the "Scribble Here" text after 3 seconds
     setTimeout(() => {
       scribbleText.style.display = 'none';
-    }, 2000);
+    }, 1500);
   </script>
 </body>
 </html>
