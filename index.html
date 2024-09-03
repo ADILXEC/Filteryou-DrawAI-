@@ -50,12 +50,23 @@
       margin-bottom: 10px; /* Adjust margin if needed */
     }
 
+    .subheading {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 400;
+      color: rgb(246, 4, 161); /* Pinkish color */
+      font-size: 16px;
+      line-height: 1.4; /* Line height for better readability */
+      margin-top: 0;
+      margin-bottom: 20px; /* Space below the subheading */
+    }
+
     canvas {
-      border: 0.5px solid white; /* Change border color to white */
+      border: 2px solid white; /* Add a thin white border to the canvas */
       width: 400px; /* Set the canvas width */
       height: 300px; /* Set the canvas height */
       margin-bottom: 10px; /* Space between canvas and prompt */
       position: relative;
+      background-color: white; /* Set canvas background color to white */
     }
 
     #scribbleText {
@@ -63,7 +74,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: rgb(255, 172, 226); /* Pinkish color */
+      color: rgb(255, 3, 167); /* Pinkish color */
       font-size: 20px;
       font-weight: 600;
       opacity: 1;
@@ -89,42 +100,29 @@
       color: rgb(255, 172, 226); /* Pinkish color */
     }
 
-    #output {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      margin-top: -150px; /* Move the generated result up by 150px */
-      position: relative;
-    }
-
-    #output img {
-      border: 2px solid white; /* Change border size to 2px */
-    }
-
     button {
-      background-color: rgb(255, 172, 226);
-      border-radius: 100px;
-      color: black;
-      padding: 5px 15px; /* Reduced padding for smaller button */
-      border: none;
+      background-color: white; /* Change button background color to white */
+      border-radius: 100px; /* Capsule shape */
+      color: rgb(254, 0, 165); /* Pink text color */
+      padding: 5px 15px; /* Adjust padding as needed */
+      border: 2px solid rgb(255, 0, 166); /* Pink border color */
       cursor: pointer;
       margin-top: 10px;
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
-      font-size: 14px; /* Reduced font size for smaller button */
+      font-size: 14px; /* Adjust font size if needed */
     }
 
     button img {
-      width: 16px; /* Smaller icon */
+      width: 16px; /* Icon size */
       vertical-align: middle;
-      margin-right: 6px;
+      margin-right: 6px; /* Margin between icon and text */
     }
 
     #helpButton {
       position: absolute;
-      top: 20px; /* Adjusted from 40px */
-      right: 40px; /* Adjusted from 500px */
+      top: 100px; /* Adjusted from 40px */
+      right: 500px; /* Adjusted from 500px */
       background-color: rgba(0, 0, 0, 0.7);
       color: white;
       border: none;
@@ -154,8 +152,8 @@
       padding: 10px; /* Reduced padding */
       border-radius: 8px;
       position: absolute;
-      top: 70px; /* Adjusted from 80px */
-      right: 20px; /* Same as before */
+      top: 100px; /* Adjusted from 80px */
+      right: 180px; /* Same as before */
       color: white;
       font-family: 'Poppins', sans-serif;
       font-weight: 400; /* Slightly lighter font weight */
@@ -228,56 +226,29 @@
         max-width: 100%;
         height: auto;
       }
-
-      #helpSection {
-        padding: 8px; /* Further reduced padding on smaller screens */
-        font-size: 10px; /* Smaller font size on smaller screens */
-        max-width: none; /* Remove max-width on smaller screens */
-        position: relative;
-        top: auto;
-        right: auto;
-      }
-
-      #helpButton {
-        display: none; /* Hide the help button on smaller screens */
-      }
     }
-
-    #downloadButton {
-  position: absolute; /* Absolute positioning */
-  bottom: 250px; /* Distance from the bottom of the viewport */
-  right: 700px; /* Distance from the right edge of the viewport */
-  background-color: rgb(255, 172, 226);
-  border-radius: 100px; /* Capsule shape */
-  color: black;
-  padding: 5px 8px; /* Adjust padding to make it smaller */
-  border: none;
-  cursor: pointer;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-  font-size: 10px; /* Match font size with help button */
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  height: 40px;
-  width: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#downloadButton img {
-  width: 16px; /* Icon size */
-  vertical-align: middle;
-  margin-right: 4px; /* Slightly reduced margin */
-}
-
-
 
     #outputContainer {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px; /* Space between image and download button */
+      margin-top: -60px;
+    
+    }
+
+    #downloadButton {
+      background-color: white; /* Change button background color to white */
+      border-radius: 100px; /* Capsule shape */
+      color: rgb(247, 90, 192); /* Pink text color */
+      padding: 5px 15px; /* Adjust padding as needed */
+      border: 2px solid rgb(255, 172, 226); /* Pink border color */
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 14px; /* Adjust font size if needed */
+      display: none; /* Hide the download button initially */ 
+     
     }
   </style>
 </head>
@@ -297,6 +268,10 @@
   <div id="container">
     <div id="canvasContainer">
       <h1>Doodle To Dream</h1>
+      <div class="subheading">
+        Filter You: Revolutionizing Art with the Perfect Blend of AI and Imagination.<br>
+        Draw and create your own AI based art pieve
+      </div>
       <div style="position: relative;">
         <canvas id="drawingCanvas" width="400" height="300"></canvas>
         <div id="scribbleText">Scribble Here</div>
@@ -329,7 +304,7 @@
       const pos = getMouseOrTouchPosition(e);
       ctx.beginPath();
       ctx.moveTo(pos.x, pos.y);
-      ctx.strokeStyle = 'white'; // Set line color to white
+      ctx.strokeStyle = 'purple'; // Set line color to purple
       ctx.lineWidth = 2; // Set line width as needed
     }
 
@@ -378,7 +353,7 @@
       tempCanvas.width = 1024;
       tempCanvas.height = 1024;
       const tempCtx = tempCanvas.getContext('2d');
-      tempCtx.fillStyle = 'black'; // Set background color to black
+      tempCtx.fillStyle = 'white'; // Set background color to white
       tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
       tempCtx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
 
