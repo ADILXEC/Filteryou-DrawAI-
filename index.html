@@ -47,7 +47,7 @@
     h1 {
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
-      margin-bottom: -20px; /* Adjust margin if needed */
+      margin-bottom: -5px; /* Adjust margin if needed */
       font-size: 56px;
       background: linear-gradient(to right, #ff00c6, #8000ff); /* Pink to purple gradient */
       -webkit-background-clip: text;
@@ -194,6 +194,22 @@
       animation:  blink 1s  infinite;
     }
 
+    .spinner {
+      border: 4px solid rgba(9, 9, 9, 0.3); /* Light border */
+      border-top: 4px solid white; /* Spinner color */
+      border-radius: 50%;
+      width: 20px; /* Spinner size */
+      height: 20px; /* Spinner size */
+      animation: spin 1s linear infinite; /* Animation */
+      margin-right: 100px; /* Space between spinner and text */
+     margin-left: 350px;
+     margin-bottom: -25px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); } 
+      100% { transform: rotate(360deg); }
+    }
+
     @media only screen and (max-width: 600px) {
       body {
         display: flex;
@@ -267,7 +283,7 @@
 
   <div id="container">
     <div id="canvasContainer">
-      <h1>Doodle To Dream</h1>
+      <h1>AI Doodle To Dream</h1>
       <div class="subheading">
         Filter You: Revolutionizing Art with the Perfect Blend of AI and Imagination.<br>
         Draw and create your own AI based art piece
@@ -282,13 +298,15 @@
         <img src="generate.png" alt="Generate">Generate
       </button>
       <button onclick="regenerate()" title="Click to regenerate the image with the same prompt">
-        <img src="regenerate.png" alt="Regenerate">Regenerate
+        <img src="regenerate.png" alt="Regenerate">Start Over
       </button>
     </div>
     <button id="downloadButton" onclick="downloadImage()" title="Click to download the image">
       <img src="download.png" alt="Download">Save
     </button>
-    <div id="loading">Generating your image....</div>
+    <div id="loading">
+      <div class="spinner"></div>
+      Generating your image....</div>
   </div>
 
   <script>
