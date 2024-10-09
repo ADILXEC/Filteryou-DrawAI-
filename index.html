@@ -125,9 +125,9 @@
     }
 
     #helpButton {
-      position: absolute;
-      top: 90px; /* Adjusted from 40px */
-      right: 500px; /* Adjusted from 500px */
+      position: fixed;
+      bottom: 800px; /* Adjusted from 40px */
+      right: 70px; /* Adjusted from 500px */
       background-color: rgba(0, 0, 0, 0.7);
       color: white;
       border: none;
@@ -152,33 +152,39 @@
       margin-right: 4px; /* Slightly reduced margin */
     }
 
-    #helpSection {
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 10px; /* Reduced padding */
-      border-radius: 8px;
-      position: absolute;
-      top: 100px; /* Adjusted from 80px */
-      right: 180px; /* Same as before */
-      color: white;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 400; /* Slightly lighter font weight */
-      font-size: 12px; /* Smaller font size */
-      display: none;
-      max-width: 250px; /* Set a maximum width for the help section */
+    /* Popup Styles */
+    #helpModal {
+      display: none; /* Hidden by default */
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.8); /* Black background with opacity */
     }
 
-    #helpSection h2 {
-      margin-top: 0;
-      font-size: 14px; /* Smaller font size for the heading */
+    #helpModalContent {
+      background-color: #232222;
+      margin: 15% auto; /* 15% from the top and centered */
+      padding: 20px;
+      border: 1px solid #090909;
+      width: 300px; /* Width of the modal */
+      border-radius: 8px; /* Rounded corners */
     }
 
-    #helpSection ul {
+    #helpModal h2 {
+      margin: 0 0 10px; /* Space below heading */
+    }
+
+    #helpModal ul {
       list-style-type: none;
       padding: 0;
       margin: 0;
     }
 
-    #helpSection li {
+    #helpModal li {
       margin-bottom: 5px; /* Reduced margin for list items */
     }
 
@@ -187,7 +193,7 @@
       50% { opacity: 0; }
       100% { opacity: 1; }
     }
-    
+
     #loading {
       display: none;
       color: rgb(3, 3, 3);
@@ -249,7 +255,7 @@
       }
 
       .subheading {
-        font-size: 7px; /* Reduced font size for mobile */
+        font-size: 10px; /* Reduced font size for mobile */
       }
 
       input[type="text"], button, label {
@@ -275,22 +281,27 @@
   <button id="helpButton" onclick="toggleHelp()">
     <img src="help.png" alt="Help">Help
   </button>
-  <div id="helpSection">
-    <h2>How to Use</h2>
-    <ul>
-      <li><strong>Draw:</strong> Use your mouse or touchscreen to draw on the canvas.</li>
-      <li><strong>Enter Prompt:</strong> Type a description for the image you want to generate based on your sketch.</li>
-      <li><strong>Generate:</strong> Click this button to generate an image from your sketch and prompt.</li>
-      <li><strong>Regenerate:</strong> Click this button to create a new image with the same prompt.</li>
-      <li><strong>Download:</strong> Click this button to save the generated image.</li>
-    </ul>
+
+  <!-- Help Modal -->
+  <div id="helpModal">
+    <div id="helpModalContent">
+      <span style="cursor:pointer; float:right; font-size:20px;" onclick="closeHelp()">&times;</span>
+      <h2>How to Use</h2>
+      <ul>
+        <li><strong>Draw:</strong> Use your mouse or touchscreen to draw on the canvas.</li>
+        <li><strong>Enter Prompt:</strong> Type a description for the image you want to generate based on your sketch.</li>
+        <li><strong>Generate:</strong> Click this button to generate an image from your sketch and prompt.</li>
+        <li><strong>Regenerate:</strong> Click this button to create a new image with the same prompt.</li>
+        <li><strong>Download:</strong> Click this button to save the generated image.</li>
+      </ul>
+    </div>
   </div>
 
   <div id="container">
     <div id="canvasContainer">
       <h1>AI Doodle To Dream</h1>
       <div class="subheading">
-        Filter You: Revolutionizing Art with the Perfect Blend of AI and Imagination.<br><br>
+        Filter You: Revolutionizing Art with the Perfect Blend of AI and Imagination.<br>
         Draw and create your own AI based art piece
       </div>
       <div style="position: relative;">
@@ -321,8 +332,11 @@
     let drawing = false;
 
     function toggleHelp() {
-      const helpSection = document.getElementById('helpSection');
-      helpSection.style.display = helpSection.style.display === 'block' ? 'none' : 'block';
+      document.getElementById('helpModal').style.display = 'block';
+    }
+
+    function closeHelp() {
+      document.getElementById('helpModal').style.display = 'none';
     }
 
     function startDrawing(x, y) {
@@ -341,18 +355,6 @@
     function stopDrawing() {
       drawing = false;
     }
-
-    function addScribbleText() {
-  ctx.font = "20px Poppins";
-  ctx.fillStyle = "rgb(200, 3, 167)"; // Pinkish color
-  const text = "Scribble Here!";
-  const textWidth = ctx.measureText(text).width; // Get the width of the text
-  ctx.fillText(text, (canvas.width / 2) - (textWidth / 2) - 15, canvas.height / 2); // Move text 20px to the left
-  setTimeout(() => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas after 2 seconds
-    ctx.restore(); // Restore canvas state to remove scribble
-  }, 2000);
-}
 
     // Mouse events
     canvas.addEventListener('mousedown', (event) => {
@@ -421,7 +423,7 @@
       fetch('https://clipdrop-api.co/sketch-to-image/v1/sketch-to-image', {
         method: 'POST',
         headers: {
-          'x-api-key': '0d7cb0afaf32b7c48c680e832d351378b7146423dd17559896a85999af1dbcaae70078d7918303d6f8f34d8207449bc1',
+          'x-api-key': 'd7cb0afaf32b7c48c680e832d351378b7146423dd17559896a85999af1dbcaae70078d7918303d6f8f34d8207449bc1',
         },
         body: form,
       })
@@ -457,9 +459,6 @@
       link.download = 'generated-image.png';
       link.click();
     }
-
-    // Call to add the scribble text
-    addScribbleText();
   </script>
 </body>
 </html>
