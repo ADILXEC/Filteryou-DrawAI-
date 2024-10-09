@@ -324,26 +324,50 @@
       helpSection.style.display = helpSection.style.display === 'block' ? 'none' : 'block';
     }
 
-    canvas.addEventListener('mousedown', (event) => {
+    function startDrawing(x, y) {
       drawing = true;
       ctx.beginPath();
-      ctx.moveTo(event.offsetX, event.offsetY);
+      ctx.moveTo(x, y);
+    }
+
+    function draw(x, y) {
+      if (drawing) {
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      }
+    }
+
+    function stopDrawing() {
+      drawing = false;
+    }
+
+    // Mouse events
+    canvas.addEventListener('mousedown', (event) => {
+      startDrawing(event.offsetX, event.offsetY);
     });
 
     canvas.addEventListener('mousemove', (event) => {
-      if (drawing) {
-        ctx.lineTo(event.offsetX, event.offsetY);
-        ctx.stroke();
-      }
+      draw(event.offsetX, event.offsetY);
     });
 
-    canvas.addEventListener('mouseup', () => {
-      drawing = false;
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+
+    // Touch events for mobile
+    canvas.addEventListener('touchstart', (event) => {
+      const touch = event.touches[0];
+      startDrawing(touch.clientX - canvas.getBoundingClientRect().left, touch.clientY - canvas.getBoundingClientRect().top);
+      event.preventDefault(); // Prevent scrolling
     });
 
-    canvas.addEventListener('mouseleave', () => {
-      drawing = false;
+    canvas.addEventListener('touchmove', (event) => {
+      const touch = event.touches[0];
+      draw(touch.clientX - canvas.getBoundingClientRect().left, touch.clientY - canvas.getBoundingClientRect().top);
+      event.preventDefault(); // Prevent scrolling
     });
+
+    canvas.addEventListener('touchend', stopDrawing);
+    canvas.addEventListener('touchcancel', stopDrawing);
 
     function convertSketchToImage() {
       document.getElementById('loading').style.display = 'block'; // Show loading message
