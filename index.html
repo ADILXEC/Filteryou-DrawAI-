@@ -33,6 +33,7 @@
       justify-content: center;
       text-align: center;
       gap: 20px; /* Space between output and canvas */
+      flex-direction: column; /* Align items in a column */
     }
 
     #canvasContainer {
@@ -46,8 +47,11 @@
     h1 {
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
-      color: white; /* Set text color to white */
-      margin-bottom: 10px; /* Adjust margin if needed */
+      margin-bottom: -5px; /* Adjust margin if needed */
+      font-size: 56px;
+      background: linear-gradient(to right, #ff00c6, #8000ff); /* Pink to purple gradient */
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .subheading {
@@ -86,7 +90,7 @@
       margin-bottom: 10px;
       background-color: transparent;
       border: none;
-      color: white; /* Set text color to white */
+      color: rgb(234, 0, 255); /* Set text color to white */
       padding: 5px;
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
@@ -177,11 +181,35 @@
       margin-bottom: 5px; /* Reduced margin for list items */
     }
 
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    
     #loading {
       display: none;
-      color: white;
+      color: rgb(3, 3, 3);
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
+      animation: blink 1s infinite;
+    }
+
+    .spinner {
+      border: 4px solid rgba(9, 9, 9, 0.3); /* Light border */
+      border-top: 4px solid white; /* Spinner color */
+      border-radius: 50%;
+      width: 20px; /* Spinner size */
+      height: 20px; /* Spinner size */
+      animation: spin 1s linear infinite; /* Animation */
+      margin-right: 100px; /* Space between spinner and text */
+      margin-left: 350px;
+      margin-bottom: -25px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); } 
+      100% { transform: rotate(360deg); }
     }
 
     @media only screen and (max-width: 600px) {
@@ -191,9 +219,8 @@
         align-items: flex-start;
         height: auto;
         padding: 20px;
-        background-image: url('BG.jpeg');
-        background-size: cover;
-        background-position: center;
+        background-color: black; /* Change background color to black */
+        background-image: none; /* Remove background image */
       }
 
       #container {
@@ -216,39 +243,40 @@
         margin-bottom: 10px; /* Space between canvas and prompt */
       }
 
+      h1 {
+        font-size: 30px; /* Reduced font size for mobile */
+      }
+
+      .subheading {
+        font-size: 10px; /* Reduced font size for mobile */
+      }
+
       input[type="text"], button, label {
         width: 100%;
         max-width: 100%;
       }
 
-      #output img {
+      #downloadButton {
         width: 100%;
-        max-width: 100%;
-        height: auto;
       }
-    }
 
-    #outputContainer {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px; /* Space between image and download button */
-      margin-top: -60px;
-    
+      #helpButton {
+        display: none; /* Hide the help button on mobile */
+      }
     }
 
     #downloadButton {
       background-color: white; /* Change button background color to white */
       border-radius: 100px; /* Capsule shape */
-      color: rgb(247, 90, 192); /* Pink text color */
+      color: rgb(242, 4, 159); /* Pink text color */
       padding: 5px 15px; /* Adjust padding as needed */
-      border: 2px solid rgb(255, 172, 226); /* Pink border color */
+      border: 2px solid rgb(255, 0, 166); /* Pink border color */
       cursor: pointer;
+      margin-top: 10px;
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
       font-size: 14px; /* Adjust font size if needed */
-      display: none; /* Hide the download button initially */ 
-     
+      display: none; /* Hide the download button initially */
     }
   </style>
 </head>
@@ -262,19 +290,20 @@
       <li><strong>Draw:</strong> Use your mouse or touchscreen to draw on the canvas.</li>
       <li><strong>Enter Prompt:</strong> Type a description for the image you want to generate based on your sketch.</li>
       <li><strong>Generate:</strong> Click this button to generate an image from your sketch and prompt.</li>
-      <li><strong>Regenerate:</strong> Click this button to generate a new image with the same prompt.</li>
+      <li><strong>Regenerate:</strong> Click this button to create a new image with the same prompt.</li>
+      <li><strong>Download:</strong> Click this button to save the generated image.</li>
     </ul>
   </div>
+
   <div id="container">
     <div id="canvasContainer">
-      <h1>Doodle To Dream</h1>
+      <h1>AI Doodle To Dream</h1>
       <div class="subheading">
         Filter You: Revolutionizing Art with the Perfect Blend of AI and Imagination.<br>
         Draw and create your own AI based art piece
       </div>
       <div style="position: relative;">
         <canvas id="drawingCanvas" width="400" height="300"></canvas>
-        <div id="scribbleText">Scribble Here</div>
       </div>
       <label for="prompt" title="Enter a description or prompt for your drawing">Prompt:</label>
       <input type="text" id="prompt" placeholder="(Ex. 'A futuristic cityscape')" title="Type your prompt here">
@@ -282,70 +311,52 @@
         <img src="generate.png" alt="Generate">Generate
       </button>
       <button onclick="regenerate()" title="Click to regenerate the image with the same prompt">
-        <img src="regenerate.png" alt="Regenerate">Regenerate
+        <img src="regenerate.png" alt="Regenerate">Start Over
       </button>
     </div>
-    <div id="outputContainer">
-      <div id="output"></div>
-      <button id="downloadButton" style="display: none;" onclick="downloadImage()">
-        <img src="download.png" alt="Download">Save
-      </button>
+    <button id="downloadButton" onclick="downloadImage()" title="Click to download the image">
+      <img src="download.png" alt="Download">Save
+    </button>
+    <div id="loading">
+      <div class="spinner"></div>
+      Generating your image....
     </div>
-    <div id="loading">Generating your image, please wait...</div>
   </div>
+
   <script>
     const canvas = document.getElementById('drawingCanvas');
     const ctx = canvas.getContext('2d');
-    const scribbleText = document.getElementById('scribbleText');
-    let isDrawing = false;
 
-    function startDrawing(e) {
-      isDrawing = true;
-      const pos = getMouseOrTouchPosition(e);
+    let drawing = false;
+
+    function toggleHelp() {
+      const helpSection = document.getElementById('helpSection');
+      helpSection.style.display = helpSection.style.display === 'block' ? 'none' : 'block';
+    }
+
+    canvas.addEventListener('mousedown', (event) => {
+      drawing = true;
       ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
-      ctx.strokeStyle = 'purple'; // Set line color to purple
-      ctx.lineWidth = 2; // Set line width as needed
-    }
+      ctx.moveTo(event.offsetX, event.offsetY);
+    });
 
-    function stopDrawing() {
-      isDrawing = false;
-    }
-
-    function draw(e) {
-      if (!isDrawing) return;
-      const pos = getMouseOrTouchPosition(e);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.stroke();
-    }
-
-    function getMouseOrTouchPosition(evt) {
-      let clientX, clientY;
-      if (evt.touches) {
-        clientX = evt.touches[0].clientX;
-        clientY = evt.touches[0].clientY;
-      } else {
-        clientX = evt.clientX;
-        clientY = evt.clientY;
+    canvas.addEventListener('mousemove', (event) => {
+      if (drawing) {
+        ctx.lineTo(event.offsetX, event.offsetY);
+        ctx.stroke();
       }
-      const rect = canvas.getBoundingClientRect();
-      return {
-        x: clientX - rect.left,
-        y: clientY - rect.top
-      };
-    }
+    });
 
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('touchstart', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('touchmove', draw);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('touchend', stopDrawing);
-    canvas.addEventListener('mouseout', stopDrawing);
+    canvas.addEventListener('mouseup', () => {
+      drawing = false;
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      drawing = false;
+    });
 
     function convertSketchToImage() {
       document.getElementById('loading').style.display = 'block'; // Show loading message
-      document.getElementById('output').innerHTML = '';
       document.getElementById('downloadButton').style.display = 'none'; // Hide the download button initially
 
       const form = new FormData();
@@ -390,53 +401,35 @@
         .then(response => response.blob())
         .then(blob => {
           const imageUrl = URL.createObjectURL(blob);
-          const imageElement = document.createElement('img');
-          imageElement.src = imageUrl;
+          const img = new Image();
+          img.src = imageUrl;
+          img.onload = () => {
+            // Draw the generated image on the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before drawing the new image
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-          // Set the width and height of the generated image to match the canvas
-          imageElement.width = canvas.width;
-          imageElement.height = canvas.height;
-
-          document.getElementById('output').innerHTML = '';
-          document.getElementById('output').appendChild(imageElement);
-
-          // Show the download button
-          document.getElementById('downloadButton').style.display = 'block';
-          document.getElementById('downloadButton').dataset.url = imageUrl; // Store image URL in data attribute
+            // Show the download button
+            document.getElementById('downloadButton').style.display = 'block';
+            document.getElementById('loading').style.display = 'none'; // Hide loading message
+          };
         })
         .catch(error => {
           console.error('Error:', error);
-          document.getElementById('output').textContent = 'Error generating image. Please try again.';
-        })
-        .finally(() => {
-          document.getElementById('loading').style.display = 'none'; // Hide loading message
+          document.getElementById('loading').style.display = 'none'; // Hide loading message in case of error
         });
     }
 
     function regenerate() {
-      convertSketchToImage();
-    }
-
-    function toggleHelp() {
-      const helpSection = document.getElementById('helpSection');
-      helpSection.style.display = helpSection.style.display === 'none' ? 'block' : 'none';
+      location.reload(); // Reloads the page, resetting everything
     }
 
     function downloadImage() {
-      const downloadButton = document.getElementById('downloadButton');
-      const imageUrl = downloadButton.dataset.url; // Retrieve image URL from data attribute
-      const a = document.createElement('a');
-      a.href = imageUrl;
-      a.download = 'generated_image.jpg'; // Set default file name
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      const imageUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = imageUrl;
+      link.download = 'generated-image.png';
+      link.click();
     }
-
-    // Remove the "Scribble Here" text after 3 seconds
-    setTimeout(() => {
-      scribbleText.style.display = 'none';
-    }, 1500);
   </script>
 </body>
 </html>
