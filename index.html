@@ -42,7 +42,6 @@
       justify-content: center;
       align-items: center;
       position: relative;
-     
     }
 
     h1 {
@@ -83,7 +82,7 @@
       font-size: 20px;
       font-weight: 600;
       opacity: 1;
-      transition: opacity 1s ease-out; /* Shorter transition for quicker fade out */
+      transition: opacity 2s ease-out; /* Shorter transition for quicker fade out */
     }
 
     input[type="text"], button, label {
@@ -98,11 +97,12 @@
     }
 
     input[type="text"] {
-      border-bottom: 1px solid white; /* Set border color to white */
+      border-bottom: 1px solid rgb(2, 2, 2); /* Set border color to white */
+      border: 1px solid rgb(4, 4, 4); /* Pink border color */
     }
 
     input[type="text"]::placeholder {
-      color: rgb(255, 172, 226); /* Pinkish color */
+      color: rgb(251, 130, 209); /* Pinkish color */
     }
 
     button {
@@ -245,11 +245,11 @@
       }
 
       h1 {
-        font-size: 36px; /* Reduced font size for mobile */
+        font-size: 30px; /* Reduced font size for mobile */
       }
 
       .subheading {
-        font-size: 14px; /* Reduced font size for mobile */
+        font-size: 10px; /* Reduced font size for mobile */
       }
 
       input[type="text"], button, label {
@@ -342,6 +342,18 @@
       drawing = false;
     }
 
+    function addScribbleText() {
+  ctx.font = "20px Poppins";
+  ctx.fillStyle = "rgb(200, 3, 167)"; // Pinkish color
+  const text = "Scribble Here!";
+  const textWidth = ctx.measureText(text).width; // Get the width of the text
+  ctx.fillText(text, (canvas.width / 2) - (textWidth / 2) - 15, canvas.height / 2); // Move text 20px to the left
+  setTimeout(() => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas after 2 seconds
+    ctx.restore(); // Restore canvas state to remove scribble
+  }, 2000);
+}
+
     // Mouse events
     canvas.addEventListener('mousedown', (event) => {
       startDrawing(event.offsetX, event.offsetY);
@@ -409,7 +421,7 @@
       fetch('https://clipdrop-api.co/sketch-to-image/v1/sketch-to-image', {
         method: 'POST',
         headers: {
-          'x-api-key': '0d7cb0afaf32b7c48c680e832d351378b7146423dd17559896a85999af1dbcaae70078d7918303d6f8f34d8207449bc1',
+          'x-api-key': 'd7cb0afaf32b7c48c680e832d351378b7146423dd17559896a85999af1dbcaae70078d7918303d6f8f34d8207449bc1',
         },
         body: form,
       })
@@ -445,6 +457,9 @@
       link.download = 'generated-image.png';
       link.click();
     }
+
+    // Call to add the scribble text
+    addScribbleText();
   </script>
 </body>
 </html>
